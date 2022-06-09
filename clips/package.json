@@ -1,0 +1,35 @@
+{
+  "name": "clips",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "16.x.x",
+    "npm": "8.x.x"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "esbuild ./src --bundle --platform=node --outfile=./build/output.js",
+    "lint": "eslint . --ext ts",
+    "prepare": "cd .. && husky install clips/.husky",
+    "prettify": "prettier --no-editorconfig --write .",
+    "start": "node ./build/output.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "esbuild ./src --bundle --platform=node --outfile=./build/output.js --watch"
+  },
+  "keywords": [],
+  "author": "Kacper Jagieła",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.41",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "esbuild": "^0.14.43",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  }
+}

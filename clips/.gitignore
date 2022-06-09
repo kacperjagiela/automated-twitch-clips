@@ -1,0 +1,11 @@
+*.js
+!jest.config.js
+!.eslintrc.js
+*.d.ts
+node_modules
+
+# build
+
+# misc
+.DS_Store
+.env
