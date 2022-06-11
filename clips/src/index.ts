@@ -5,6 +5,7 @@ import session from "express-session";
 import handlebars from "handlebars";
 
 import OAuth2Strategy from "passport-oauth2";
+import { TwitchClient } from "./clients/TwitchClient";
 
 dotenv.config();
 
@@ -73,9 +74,21 @@ const template = handlebars.compile(`
 </table></html>`);
 
 // If user has an authenticated session, display it, otherwise display link to authenticate
-server.get("/", (req, res) => {
+server.get("/", async (req, res) => {
   if (req.session && req.session.passport && req.session.passport.user) {
     // user logged in to twitch here
+    const twitchClient = new TwitchClient(
+      req.session.passport.user.accessToken
+    );
+
+    const twitchUsers = await twitchClient.getUsersByLogin([
+      "h2p_gucio",
+      "vysotzky",
+      "parisplatynov",
+    ]);
+
+    console.log(await twitchClient.getClipsByBroadcasterId(twitchUsers[0].id));
+
     res.send(template(req.session.passport.user));
   } else {
     res.send(
