@@ -18,12 +18,8 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types"],
-    "baseUrl": ".",
-    "paths": {
-      "@consts/*": ["./consts/*"],
-      "@enums/*": ["./enums/*"]
-    }
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "baseUrl": "."
   },
   "exclude": ["node_modules"]
 }
