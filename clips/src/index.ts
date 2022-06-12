@@ -2,10 +2,10 @@ import * as dotenv from "dotenv";
 import express from "express";
 import passport from "passport";
 import session from "express-session";
-import handlebars from "handlebars";
 
 import OAuth2Strategy from "passport-oauth2";
 import { TwitchClient } from "./clients/TwitchClient";
+import { DownloadClient } from "./clients/DownloadClient";
 
 dotenv.config();
 
@@ -65,21 +65,14 @@ server.get(
   })
 );
 
-// Define a simple template to safely generate HTML with values from user's profile
-const template = handlebars.compile(`
-<html><head><title>Twitch Auth Sample</title></head>
-<table>
-    <tr><th>Access Token</th><td>{{accessToken}}</td></tr>
-    <tr><th>Refresh Token</th><td>{{refreshToken}}</td></tr>
-</table></html>`);
-
 // If user has an authenticated session, display it, otherwise display link to authenticate
 server.get("/", async (req, res) => {
   if (req.session && req.session.passport && req.session.passport.user) {
-    // user logged in to twitch here
     const twitchClient = new TwitchClient(
       req.session.passport.user.accessToken
     );
+
+    const downloadClient = new DownloadClient();
 
     const twitchUsers = await twitchClient.getUsersByLogin([
       "h2p_gucio",
@@ -87,12 +80,16 @@ server.get("/", async (req, res) => {
       "parisplatynov",
     ]);
 
-    console.log(await twitchClient.getClipsByBroadcasterId(twitchUsers[0].id));
+    const clips = await twitchClient.getClipsByBroadcasterId(twitchUsers[0].id);
 
-    res.send(template(req.session.passport.user));
+    const downloadEntities = twitchClient.normalizeClipsForDownload(clips);
+
+    downloadClient.downloadFileByEntity(downloadEntities[0]);
+
+    res.send("Download finished");
   } else {
     res.send(
-      '<html><head><title>Twitch Auth Sample</title></head><a href="/auth/twitch">Connect to twitch</a></html>'
+      '<html><head><title>Twitch Auth Sample</title></head><a href="/auth/twitch">Download clips</a></html>'
     );
   }
 });

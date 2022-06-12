@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { handleError } from "src/utils/handleError";
+import { DownloadEntity } from "./types/downloadEntity";
 import {
   TwitchClip,
   TwitchClipsResponse,
@@ -59,5 +60,23 @@ export class TwitchClient {
       handleError(e);
       return null as unknown as TwitchClip[];
     }
+  }
+
+  /* Normalize clips for download
+   *
+   * get .mp4 from thumbnail_url for download
+   */
+  public normalizeClipsForDownload(clips: TwitchClip[]): DownloadEntity[] {
+    const downloadEntities: DownloadEntity[] = clips.map((clip) => {
+      const url = clip.thumbnail_url;
+      const fileName = `${clip.broadcaster_name}-${clip.title}-by-${clip.creator_name}`;
+
+      return {
+        url: url.slice(0, url.indexOf("-preview")) + ".mp4",
+        fileName,
+      };
+    });
+
+    return downloadEntities;
   }
 }
