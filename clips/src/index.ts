@@ -74,19 +74,34 @@ server.get("/", async (req, res) => {
 
     const downloadClient = new DownloadClient();
 
-    const twitchUsers = await twitchClient.getUsersByLogin([
-      "h2p_gucio",
-      "vysotzky",
-      "parisplatynov",
-    ]);
+    const twitchUsers = await twitchClient.getUsersByLogin(["h2p_gucio"]);
 
     const clips = await twitchClient.getClipsByBroadcasterId(twitchUsers[0].id);
 
+    const clipsDuration = clips.reduce(
+      (duration, currentClip) => (duration += currentClip.duration),
+      0
+    );
+
     const downloadEntities = twitchClient.normalizeClipsForDownload(clips);
 
-    downloadClient.downloadFileByEntity(downloadEntities[0]);
+    downloadEntities.forEach((entity) =>
+      downloadClient.downloadFileByEntity(entity)
+    );
 
-    res.send("Download finished");
+    const clipsTime = new Date(0);
+    clipsTime.setSeconds(clipsDuration);
+
+    console.log(clipsDuration);
+
+    console.log(`Clips duration: ${clipsTime.toISOString().slice(14, 19)}`);
+
+    res.send(
+      `<html>
+        <h1>Download finished.</h1>
+        <h2>whole clips duration: ${clipsTime.toISOString().slice(14, 19)}</h2>
+        </html`
+    );
   } else {
     res.send(
       '<html><head><title>Twitch Auth Sample</title></head><a href="/auth/twitch">Download clips</a></html>'
