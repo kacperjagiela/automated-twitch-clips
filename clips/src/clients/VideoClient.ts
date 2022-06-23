@@ -46,19 +46,9 @@ export class VideoClient {
 
     const muteCommand = FfmpegCommand();
 
-    muteCommand.addInput(
+    muteCommand.input(
       `${this.pathToCompletedDir}/${fileName || VideoClient.completedFileName}`
     );
-
-    // muteCommand.audioFilters(
-    //   videoParts.map((videoPart) => ({
-    //     filter: "volume",
-    //     options: `0:enable='between(t,${convertTimeToSeconds(
-    //       videoPart.start,
-    //       ":"
-    //     )}, ${convertTimeToSeconds(videoPart.end, ":")})'`,
-    //   }))
-    // );
 
     videoParts.forEach((videoPart) => {
       muteCommand.audioFilters(
@@ -69,16 +59,26 @@ export class VideoClient {
       );
     });
 
+    console.time("Muting");
+
     muteCommand
       .output(
         `${this.pathToCompletedDir}/muted-${
           fileName || VideoClient.completedFileName
         }`
       )
+      .on("error", (err, stdout, stderr) => {
+        if (err) {
+          console.log(err.message);
+          console.log("stdout:\n" + stdout);
+          console.log("stderr:\n" + stderr);
+        }
+      })
       .on("end", () => {
         console.log(
           `Finished muting video: ${fileName || VideoClient.completedFileName}`
         );
+        console.timeEnd("Muting");
       })
       .run();
   }
