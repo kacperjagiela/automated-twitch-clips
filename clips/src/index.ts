@@ -14,6 +14,8 @@ dotenv.config();
 
 const server = express();
 
+server.use(express.json());
+
 server.use(
   session({
     secret: "raldkjlkznvlkbjlkadbf",
@@ -21,6 +23,7 @@ server.use(
     saveUninitialized: false,
   })
 );
+
 server.use(passport.initialize());
 server.use(passport.session());
 
@@ -76,6 +79,11 @@ passport.use(
   )
 );
 
+// Declare clients used by multiple endpoints
+
+const downloadClient = new DownloadClient();
+const videoClient = new VideoClient(downloadClient.dirPath);
+
 server.get(
   "/auth/google",
   passport.authenticate("google", {
@@ -118,10 +126,6 @@ server.get("/", async (req, res) => {
     const twitchClient = new TwitchClient(
       req.session.passport.user.accessToken
     );
-
-    const downloadClient = new DownloadClient();
-    const videoClient = new VideoClient(downloadClient.dirPath);
-
     const twitchUsers = await twitchClient.getUsersByLogin([broadcasterName]);
 
     const clips = await twitchClient.getClipsByBroadcasterId(twitchUsers[0].id);
@@ -196,6 +200,16 @@ server.get("/google", async (req, res) => {
     res.send(
       '<html><head><title>Google Auth Sample</title></head><a href="/auth/google">Log in</a></html>'
     );
+  }
+});
+
+server.post("/mute-video-parts", (req, res) => {
+  if (req.body) {
+    const { fileName, videoParts } = req.body;
+
+    videoClient.muteVideoByParts(videoParts, fileName);
+
+    res.sendStatus(200);
   }
 });
 
