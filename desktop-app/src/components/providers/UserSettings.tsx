@@ -21,7 +21,7 @@ interface Props {
 
 export const UserSettingsProvider: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = React.useReducer(userSettingsReducer, {
-    darkMode: false,
+    colorMode: "light",
   });
 
   return (
@@ -32,8 +32,8 @@ export const UserSettingsProvider: React.FC<Props> = ({ children }) => {
 };
 
 interface UseUserSettings {
-  darkMode: boolean;
-  toggleColorMode: () => void;
+  colorMode: "light" | "dark";
+  toggleColorMode: (colorMode: "light" | "dark") => void;
 }
 
 export const useUserSettings = (): UseUserSettings => {
@@ -45,12 +45,12 @@ export const useUserSettings = (): UseUserSettings => {
 
   const { state, dispatch } = ctx;
 
-  const toggleColorMode = () => {
-    dispatch({ type: ActionType.ToggleColorMode });
+  const toggleColorMode = (colorMode: "light" | "dark") => {
+    dispatch({ type: ActionType.ToggleColorMode, payload: { colorMode } });
   };
 
   return {
-    darkMode: state.darkMode,
+    colorMode: state.colorMode,
     toggleColorMode,
   };
 };

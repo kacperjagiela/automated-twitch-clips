@@ -11,7 +11,7 @@ export const Youtube: React.FC = () => (
     </Typography>
     <Stack spacing={1}>
       <Link to={Urls.Twitch}>Go to Twitch Panel</Link>
-      <Link to={Urls.Youtube}>Go to Youtube Panel</Link>
+      <Link to={Urls.Index}>Go back</Link>
     </Stack>
   </Box>
 );

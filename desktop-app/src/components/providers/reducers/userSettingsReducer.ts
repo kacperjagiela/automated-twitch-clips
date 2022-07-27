@@ -1,5 +1,5 @@
 export type State = {
-  darkMode: boolean;
+  colorMode: "light" | "dark";
 };
 
 export enum ActionType {
@@ -8,12 +8,15 @@ export enum ActionType {
 
 export type Action = {
   type: ActionType.ToggleColorMode;
+  payload: {
+    colorMode: "light" | "dark";
+  };
 };
 
 export const userSettingsReducer = (state: State, action: Action) => {
   switch (action.type) {
     case ActionType.ToggleColorMode:
-      return { ...state, darkMode: !state.darkMode };
+      return { ...state, colorMode: action.payload.colorMode };
     default:
       return state;
   }
